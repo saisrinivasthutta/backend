@@ -14,19 +14,18 @@ class Edge(BaseModel):
 
 class Node(BaseModel):
     id: str
-    type: str  # Assuming you have types like 'input', 'output', etc.
+    type: str  
 
 class Pipeline(BaseModel):
     nodes: List[Node]
     edges: List[Edge]
 
-# Add CORS middleware to allow requests from localhost:3000 (React app)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Allow only this origin (your React app)
+    allow_origins=["*"], 
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],  
+    allow_headers=["*"],  
 )
 
 # Define a simple GET route to test the server is working
@@ -34,6 +33,7 @@ app.add_middleware(
 async def root():
     return {"message": "Hello, World!"}
 
+#API End Point for Getting the Results
 @app.post("/pipelines/parse")
 async def parse_pipeline(pipeline: Pipeline):
     G = nx.DiGraph()
@@ -46,7 +46,6 @@ async def parse_pipeline(pipeline: Pipeline):
     edge_list = [(edge.source, edge.target) for edge in pipeline.edges]
     G.add_edges_from(edge_list)
 
-    # Example of using NetworkX's built-in algorithms
     is_dag = nx.is_directed_acyclic_graph(G)
 
     return {
